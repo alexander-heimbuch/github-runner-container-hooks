@@ -10,5 +10,17 @@ This is a custom [runner container hook](https://docs.github.com/en/actions/host
 
 ## Usage
 
+In your Github Actions Docker Runner Dockerfile:
+
+```Dockerfile
+FROM ghcr.io/alexander-heimbuch/github-runner-container-hooks:latest as runnerContainerHooks
+COPY --from=runnerContainerHooks /static/runner_container_hooks.js /runner_container_hooks.js
+# Adapt accordingly
+ENV RUNNER_HOME=/home/docker/actions-runner/ 
+ENV ACTIONS_RUNNER_CONTAINER_HOOKS=/runner_container_hooks.js
+
+```
 
 ## How it works
+
+Instead of using the default system mounts this variant of Container Hooks creates a docker volume for each required context (`_work`, `externals`, `_github_home` and `_github_workflow`). Before a job starts the current job context is copied into the volume.

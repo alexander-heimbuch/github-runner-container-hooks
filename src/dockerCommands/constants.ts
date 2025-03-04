@@ -11,7 +11,7 @@ export const systemVolumes = [
 	{
 		localPath: "externals",
 		target: "/__e",
-		volume: volumeName("workspace"),
+		volume: volumeName("externals"),
 	},
 	{
 		localPath: "_work/_temp/_github_home",
