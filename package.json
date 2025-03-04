@@ -1,25 +1,25 @@
 {
-  "name": "dockerhooks",
-  "version": "0.1.0",
-  "description": "",
-  "main": "lib/index.js",
-  "scripts": {
-    "build": "npx ncc build",
-    "format": "npx tsc && biome check --write"
-  },
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "@actions/core": "1.11.1",
-    "@actions/exec": "1.1.1",
-    "shlex": "2.1.2",
-    "uuid": "11.1.0"
-  },
-  "devDependencies": {
-    "@types/node": "22.13.9",
-    "@vercel/ncc": "0.38.3",
-    "ts-node": "10.9.2",
-    "typescript": "5.8.2",
-    "@biomejs/biome": "1.9.4"
-  }
+	"name": "dockerhooks",
+	"version": "0.1.0",
+	"description": "",
+	"main": "lib/index.js",
+	"scripts": {
+		"build": "npx ncc build",
+		"format": "npx tsc --noEmit && biome check --write"
+	},
+	"author": "",
+	"license": "MIT",
+	"dependencies": {
+		"@actions/core": "1.11.1",
+		"@actions/exec": "1.1.1",
+		"shlex": "2.1.2",
+		"uuid": "11.1.0"
+	},
+	"devDependencies": {
+		"@types/node": "22.13.9",
+		"@vercel/ncc": "0.38.3",
+		"ts-node": "10.9.2",
+		"typescript": "5.8.2",
+		"@biomejs/biome": "1.9.4"
+	}
 }

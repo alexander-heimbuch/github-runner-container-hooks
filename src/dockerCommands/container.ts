@@ -1,18 +1,17 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { env } from "node:process";
 import * as core from "@actions/core";
-import * as fs from "fs";
-import {
+import { v4 as uuidv4 } from "uuid";
+import type {
 	ContainerInfo,
 	Registry,
 	RunContainerStepArgs,
 	ServiceContainerInfo,
-} from "hooklib/lib";
-import * as path from "path";
-import { env } from "process";
-import { v4 as uuidv4 } from "uuid";
-import { runDockerCommand, RunDockerCommandOptions } from "../utils";
-import { getRunnerHome, getRunnerLabel, getRunnerVolume, systemVolumes } from "./constants";
+} from "../interfaces";
+import { type RunDockerCommandOptions, runDockerCommand } from "../utils";
+import { getRunnerHome, getRunnerLabel, systemVolumes } from "./constants";
 import { volumeCreate } from "./volume";
-
 
 const createMounts = async (
 	userVolumes: {
@@ -23,27 +22,26 @@ const createMounts = async (
 ): Promise<string[]> => {
 	const result: string[] = [];
 
-  for (const volume of userVolumes) {
+	for (const volume of userVolumes) {
 		result.push(
-			`--volume`,
+			"--volume",
 			`${volume.sourceVolumePath}:${volume.targetVolumePath}${
 				volume.readOnly ? ":ro" : ""
 			}`,
 		);
 	}
 
-  for (const volume of systemVolumes) {
-    await volumeCreate(volume.volume);
-    result.push("--volume", `${volume.volume}:${volume.target}`);
-  }
+	for (const volume of systemVolumes) {
+		await volumeCreate(volume.volume);
+		result.push("--volume", `${volume.volume}:${volume.target}`);
+	}
 
-  result.push("--volume", "/var/run/docker.sock:/var/run/docker.sock")
+	result.push("--volume", "/var/run/docker.sock:/var/run/docker.sock");
 
 	return result;
 };
 
-export async function copyContainerRuntime(
-) {
+export async function copyContainerRuntime() {
 	const volumeArgs: string[] = [];
 
 	for (const volume of systemVolumes) {
@@ -51,7 +49,7 @@ export async function copyContainerRuntime(
 	}
 
 	const copier = await runDockerCommand([
-    "run",
+		"run",
 		"-d",
 		"--rm",
 		...volumeArgs,
@@ -59,7 +57,7 @@ export async function copyContainerRuntime(
 		"tail",
 		"-f",
 		"/dev/null",
-	]).then(res => res.trim());
+	]).then((res) => res.trim());
 
 	for (const volume of systemVolumes) {
 		await runDockerCommand([
@@ -104,19 +102,19 @@ export async function createContainer(
 
 	if (args.environmentVariables) {
 		for (const [key] of Object.entries(args.environmentVariables)) {
-      if (key === 'HOME') {
-        continue;
-      }
+			if (key === "HOME") {
+				continue;
+			}
 
 			dockerArgs.push("-e");
 			dockerArgs.push(key);
 		}
 	}
 
-	dockerArgs.push(...await createMounts(args.userMountVolumes || []));
+	dockerArgs.push(...(await createMounts(args.userMountVolumes || [])));
 
 	if (args.entryPoint) {
-		dockerArgs.push(`--entrypoint`);
+		dockerArgs.push("--entrypoint");
 		dockerArgs.push(args.entryPoint);
 	}
 
@@ -140,7 +138,7 @@ export async function createContainer(
 	response.ports = [];
 
 	if ((args as ServiceContainerInfo).contextName) {
-		response["contextName"] = (args as ServiceContainerInfo).contextName;
+		response.contextName = (args as ServiceContainerInfo).contextName;
 	}
 
 	return response;
@@ -293,7 +291,7 @@ export async function healthCheck({
 
 	let tries = 1;
 	while (health === ContainerHealth.Starting && tries < 13) {
-		const backOffSeconds = Math.pow(2, tries);
+		const backOffSeconds = 2 ** tries;
 		core.info(
 			`Container '${image}' is '${health}', retry in ${backOffSeconds} seconds`,
 		);
@@ -393,11 +391,11 @@ export async function containerExecStep(
 	args,
 	containerId: string,
 ): Promise<void> {
-  await copyContainerRuntime();
+	await copyContainerRuntime();
 
 	const dockerArgs: string[] = ["exec", "-i"];
-	// dockerArgs.push(`--workdir=${args.workingDirectory}`);
-	for (const [key] of Object.entries(args["environmentVariables"])) {
+
+	for (const [key] of Object.entries(args.environmentVariables)) {
 		dockerArgs.push("-e");
 		dockerArgs.push(key);
 	}
@@ -432,7 +430,7 @@ export async function containerRun(
 		throw new Error("expected image to be set");
 	}
 
-  await copyContainerRuntime();
+	await copyContainerRuntime();
 
 	const dockerArgs: string[] = ["run", "--rm"];
 
@@ -453,11 +451,11 @@ export async function containerRun(
 		}
 	}
 
-	dockerArgs.push(...await createMounts(args.userMountVolumes || []));
+	dockerArgs.push(...(await createMounts(args.userMountVolumes || [])));
 
-	if (args["entryPoint"]) {
-		dockerArgs.push(`--entrypoint`);
-		dockerArgs.push(args["entryPoint"]);
+	if (args.entryPoint) {
+		dockerArgs.push("--entrypoint");
+		dockerArgs.push(args.entryPoint);
 	}
 	dockerArgs.push(args.image);
 	if (args.entryPointArgs) {

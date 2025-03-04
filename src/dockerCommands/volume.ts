@@ -10,9 +10,9 @@ export async function volumeCreate(name: string): Promise<string> {
 export async function volumeRemove(): Promise<void> {
 	const dockerArgs: string[] = ["volume", "rm"];
 	dockerArgs.push("--force");
-  for (const volume of systemVolumes) {
-    try {
-      await runDockerCommand([...dockerArgs, volume.volume]);
-    } catch (err) {}
-  }
+	for (const volume of systemVolumes) {
+		try {
+			await runDockerCommand([...dockerArgs, volume.volume]);
+		} catch (err) {}
+	}
 }

@@ -1,9 +1,9 @@
-import { RunScriptStepArgs } from 'hooklib/lib'
-import { containerExecStep } from '../dockerCommands'
+import { containerExecStep } from "../dockerCommands";
+import type { RunScriptStepArgs } from "../interfaces";
 
 export async function runScriptStep(
-  args: RunScriptStepArgs,
-  state
+	args: RunScriptStepArgs,
+	state,
 ): Promise<void> {
-  await containerExecStep(args, state.container)
+	await containerExecStep(args, state.container);
 }
