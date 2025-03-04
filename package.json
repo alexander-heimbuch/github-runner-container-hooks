@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "lib/index.js",
 	"scripts": {
-		"build": "npx ncc build",
+		"build": "npx tsc && npx ncc build",
 		"format": "npx tsc --noEmit && biome check --write"
 	},
 	"author": "",
