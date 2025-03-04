@@ -5,6 +5,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV NODE_ENV=production
 ENV PORT=8000
 RUN corepack enable
+ENV CI=true
 
 COPY . /hooks
 WORKDIR /hooks
