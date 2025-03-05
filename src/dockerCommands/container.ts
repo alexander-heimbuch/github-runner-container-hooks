@@ -67,8 +67,11 @@ export async function copyContainerRuntime() {
 			`${copier}:${volume.target}/`,
 		]);
 	}
-
-	await runDockerCommand(["kill", copier]);
+	try {
+		await runDockerCommand(["kill", copier]);
+	} catch (err) {
+		core.info(`failed to kill the runtime copier container ${copier}`);
+	}
 }
 
 export async function createContainer(
